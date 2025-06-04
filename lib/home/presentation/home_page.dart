@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_flutter/clientDetails/presentation/client_datails_page.dart';
 import 'package:frontend_flutter/core/colors/app_colors.dart';
 import 'package:frontend_flutter/core/navigation/app_navigation_bar.dart';
 
@@ -135,7 +136,7 @@ class _HomePageState extends State<HomePage> {
                 ),),
                 leading: Icon(Icons.person),
                 onTap: (){
-                  
+                  Navigator.push(context,MaterialPageRoute(builder: (context) =>ClientDetailsPage()));
                 },
               );
             }),
