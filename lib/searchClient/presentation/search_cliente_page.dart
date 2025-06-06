@@ -15,7 +15,6 @@ class _SearchClientPageState extends State<SearchClientPage> {
   @override
   void initState() {
     super.initState();
-    // Cargar los clientes al iniciar la página
     context.read<ClientCubit>().fetchClients("f173260f-3412-4b53-bc84-4c55d6bc4b41");
   }
 

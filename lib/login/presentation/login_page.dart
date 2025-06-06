@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend_flutter/core/colors/app_colors.dart';
 import 'package:frontend_flutter/home/presentation/home_page.dart';
+import 'package:frontend_flutter/login/presentation/cubit/login_cubit.dart';
 import 'package:frontend_flutter/register/presentation/register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -12,10 +14,35 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool _obscureText = true;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocListener<LoginCubit, LoginState>(
+      listener: (context, state) {
+        if (state is LoginSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Inicio de sesión exitoso')),
+          );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomePage()),
+          );
+        } else if (state is LoginError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+        }
+      },
+      child: Scaffold(
       backgroundColor: AppColors.primary,
       body: Center(
         child: Padding(
@@ -25,28 +52,29 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 20),
-              Text("Gestor de gimnasio",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+              Text(
+                "Gestor de gimnasio",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,),
               const SizedBox(height: 40),
               const Text(
                 'Bienvienido de nuevo',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white
+                  color: Colors.white,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
               TextFormField(
-                style: TextStyle(
-                  color: AppColors.texts
-                ),
+                controller: _emailController,
+                style: TextStyle(color: AppColors.texts),
                 decoration: const InputDecoration(
                   filled: true,
                   fillColor: AppColors.backgroundTextFiel,
@@ -56,16 +84,14 @@ class _LoginPageState extends State<LoginPage> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(8.0)),
                     borderSide: BorderSide.none,
-                  )
-                  
+                  ),
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 20),
               TextFormField(
-                style: TextStyle(
-                  color: AppColors.texts
-                ),
+                controller: _passwordController,
+                style: TextStyle(color: AppColors.texts),
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: AppColors.backgroundTextFiel,
@@ -82,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                       });
                     },
                   ),
-                   border: OutlineInputBorder(
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(8.0)),
                     borderSide: BorderSide.none,
                   ),
@@ -90,17 +116,18 @@ class _LoginPageState extends State<LoginPage> {
                 obscureText: _obscureText,
               ),
               const SizedBox(height: 20),
-              Text("¿Olvidaste tu contraseña?",
-                style: TextStyle(
-                  color: AppColors.texts,
-                  fontSize: 14,
-                ),
+              Text(
+                "¿Olvidaste tu contraseña?",
+                style: TextStyle(color: AppColors.texts, fontSize: 14),
                 textAlign: TextAlign.left,
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+                  final email = _emailController.text.trim();
+                  final password = _passwordController.text.trim();
+                  context.read<LoginCubit>().login(email, password);
+                  
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.buttonBackground,
@@ -108,13 +135,20 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 child: const Text(
                   'Iniciar Sesión',
-                  style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               Spacer(),
               GestureDetector(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage()));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => RegisterPage()),
+                  );
                 },
                 child: const Text(
                   '¿No tienes una cuenta? Regístrate aquí',
@@ -125,11 +159,13 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-              )
+              ),
             ],
           ),
         ),
       ),
+    ),
+    
     );
   }
-} 
+}

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend_flutter/clientDetails/presentation/client_datails_page.dart';
 import 'package:frontend_flutter/core/colors/app_colors.dart';
 import 'package:frontend_flutter/core/navigation/app_navigation_bar.dart';
+import 'package:frontend_flutter/home/presentation/cubit/counter_members_cubit.dart';
+import 'package:frontend_flutter/home/presentation/cubit/search_client_cubit.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,7 +14,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<String> users = ['Juan', 'María', 'Carlos', 'Luisa'];
+  
+  @override
+  void initState(){
+    super.initState();
+    context.read<SearchClientCubit>().fetchClients();
+    context.read<CounterMembersCubit>().fetchCounterMembers();
+    
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,26 +65,52 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: Padding(
                         padding: EdgeInsets.all(25),
-                        child: Column(
-                          children: [
-                            Text(
-                              "Clientes registrados",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
+                        child: BlocBuilder<CounterMembersCubit,CounterMembersState>(
+                          builder: (context,state){
+                            if (state is CounterMembersLoading) {
+                              return const Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                              );
+                            } else if (state is CounterMembersError) {
+                              return Center(
+                                child: Text(
+                                  'Error al cargar los miembros: ${state.message}',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              );
+                            } else if (state is CounterMembersLoaded) {
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Clientes registrados",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    state.num,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+                            return const Center(
+                              child: Text(
+                                'No hay miembros disponibles',
+                                style: TextStyle(color: Colors.white),
                               ),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              "120",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
+                            );
+                          }
+                        )
                       ),
                     ),
                   ),
@@ -127,20 +164,52 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: ListView.builder(itemCount: users.length,itemBuilder: (context,index){
-              final user = users[index];
-              return ListTile(
-                title: Text(user, style: TextStyle(color: Colors.white, fontSize: 18)),
-                subtitle: Text("Nuevo registro",style: TextStyle(
-                  color: AppColors.texts
-                ),),
-                leading: Icon(Icons.person),
-                onTap: (){
-                  Navigator.push(context,MaterialPageRoute(builder: (context) =>ClientDetailsPage()));
+              child: BlocBuilder<SearchClientCubit, SearchClientState>(
+                builder: (context, state) {
+                  if (state is SearchClientLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
+                    );
+                  } else if (state is SearchClientError) {
+                    return Center(
+                      child: Text(
+                        'Error al cargar los clientes: ${state.message}',
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    );
+                  } else if (state is SearchClientLoaded) {
+                    return ListView.builder(
+                      itemCount: state.clients.length,
+                      itemBuilder: (context, index) {
+                        final client = state.clients[index];
+                        return ListTile(
+                          title: Text(
+                            client.name,
+                            style: const TextStyle(color: Colors.white, fontSize: 18),
+                          ),
+                          subtitle: Text(
+                            client.email,
+                            style: const TextStyle(color: AppColors.texts),
+                          ),
+                          leading: const Icon(Icons.person, color: Colors.white),
+                          onTap: () {
+                            // Aquí puedes navegar a los detalles del cliente
+                          },
+                        );
+                      },
+                    );
+                  }
+                  return const Center(
+                    child: Text(
+                      'No hay clientes disponibles',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  );
                 },
-              );
-            }),
-            )
+              ),
+            ),
           ],
         ),
       ),
