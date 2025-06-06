@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend_flutter/core/colors/app_colors.dart';
+import 'package:frontend_flutter/register/presentation/cubit/register_cubit.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -9,10 +11,36 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   
   @override
+  void dispose(){
+    _fullNameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-     return Scaffold(
+     return BlocListener<RegisterCubit, RegisterState>(
+      listener: (context, state) {
+        if (state is RegisterSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Registro exitoso')),
+          );
+          Navigator.pop(context);
+        } else if (state is RegisterError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+        }
+      },
+      child: Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.close),
@@ -45,6 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
               textAlign: TextAlign.center,),
               const SizedBox(height: 30,),
               TextFormField(
+                controller: _fullNameController,
                 style: TextStyle(
                   color: AppColors.texts
                 ),
@@ -62,6 +91,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 30),
               TextFormField(
+                controller: _emailController,
                 style: TextStyle(
                   color: AppColors.texts
                 ),
@@ -80,6 +110,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 30),
               TextFormField(
+                controller: _passwordController,
                 style: TextStyle(
                   color: AppColors.texts
                 ),
@@ -97,6 +128,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 30),
               TextFormField(
+                controller: _confirmPasswordController,
                 style: TextStyle(
                   color: AppColors.texts
                 ),
@@ -114,7 +146,29 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  final fullName = _fullNameController.text.trim();
+                  final email = _emailController.text.trim();
+                  final password = _passwordController.text.trim();
+                  final confirmPassword = _confirmPasswordController.text.trim();
+
+                  if (fullName.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Por favor, completa todos los campos')),
+                    );
+                    return;
+                  }
+
+                  if (password != confirmPassword) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Las contraseñas no coinciden')),
+                    );
+                    return;
+                  }
+                  print('Registering user: $fullName, $email, $password');
+                  context.read<RegisterCubit>().registerUser(email, fullName, password);
+                  Navigator.pop(context);
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.buttonBackground,
                   padding: const EdgeInsets.symmetric(vertical: 15),
@@ -150,6 +204,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ),
       ),
-    );;
+    ),
+     );
   }
 }

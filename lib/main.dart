@@ -9,6 +9,10 @@ import 'package:frontend_flutter/login/data/datasource/login_remote.dart';
 import 'package:frontend_flutter/login/data/repositories/login_repositories_impl.dart';
 import 'package:frontend_flutter/login/domain/login_use_cases.dart';
 import 'package:frontend_flutter/login/presentation/cubit/login_cubit.dart';
+import 'package:frontend_flutter/register/data/datasource/register_datasource.dart';
+import 'package:frontend_flutter/register/data/repositories/register_repositories_impl.dart';
+import 'package:frontend_flutter/register/domain/register_usecases.dart';
+import 'package:frontend_flutter/register/presentation/cubit/register_cubit.dart';
 import 'package:frontend_flutter/searchClient/data/datasources/client_remote.dart';
 import 'package:frontend_flutter/searchClient/data/repositories/client_repositories.dart';
 import 'package:frontend_flutter/searchClient/domain/client_use_cases.dart';
@@ -41,20 +45,22 @@ class MainApp extends StatelessWidget {
     final homeRemote = HomeDatasource();
     final homeRepositoryu = HomeRepositoriesImpl(homeDatasource: homeRemote);
     final homeUseCases = HomeUseCase(homeRepositoryu);
-
-    
+    //register
+    final registerRemote = RegisterDatasource();
+    final registerRepository = RegisterRepositoriesImpl(
+      registerDatasource: registerRemote,
+    );
+    final registerUseCases = RegisterUsecases(registerRepository);
 
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => ClientCubit(getClientsById)),
         BlocProvider(create: (_) => LoginCubit(loginUseCase)),
         BlocProvider(create: (_) => SearchClientCubit(homeUseCases)),
-        BlocProvider(create: (_) => CounterMembersCubit(homeUseCases))
+        BlocProvider(create: (_) => CounterMembersCubit(homeUseCases)),
+        BlocProvider(create: (_) => RegisterCubit(registerUseCases)),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: LoginPage(),
-      ),
+      child: MaterialApp(debugShowCheckedModeBanner: false, home: LoginPage()),
     );
   }
 }

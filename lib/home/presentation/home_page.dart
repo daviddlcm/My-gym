@@ -14,13 +14,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  
   @override
-  void initState(){
+  void initState() {
     super.initState();
     context.read<SearchClientCubit>().fetchClients();
     context.read<CounterMembersCubit>().fetchCounterMembers();
-    
   }
 
   @override
@@ -43,7 +41,8 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.white),
-            onPressed: () {},
+            onPressed: () {
+            },
           ),
         ],
       ),
@@ -65,8 +64,11 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: Padding(
                         padding: EdgeInsets.all(25),
-                        child: BlocBuilder<CounterMembersCubit,CounterMembersState>(
-                          builder: (context,state){
+                        child: BlocBuilder<
+                          CounterMembersCubit,
+                          CounterMembersState
+                        >(
+                          builder: (context, state) {
                             if (state is CounterMembersLoading) {
                               return const Center(
                                 child: CircularProgressIndicator(
@@ -109,8 +111,8 @@ class _HomePageState extends State<HomePage> {
                                 style: TextStyle(color: Colors.white),
                               ),
                             );
-                          }
-                        )
+                          },
+                        ),
                       ),
                     ),
                   ),
@@ -168,9 +170,7 @@ class _HomePageState extends State<HomePage> {
                 builder: (context, state) {
                   if (state is SearchClientLoading) {
                     return const Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                      ),
+                      child: CircularProgressIndicator(color: Colors.white),
                     );
                   } else if (state is SearchClientError) {
                     return Center(
@@ -187,13 +187,19 @@ class _HomePageState extends State<HomePage> {
                         return ListTile(
                           title: Text(
                             client.name,
-                            style: const TextStyle(color: Colors.white, fontSize: 18),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                            ),
                           ),
                           subtitle: Text(
                             client.email,
                             style: const TextStyle(color: AppColors.texts),
                           ),
-                          leading: const Icon(Icons.person, color: Colors.white),
+                          leading: const Icon(
+                            Icons.person,
+                            color: Colors.white,
+                          ),
                           onTap: () {
                             // Aquí puedes navegar a los detalles del cliente
                           },
@@ -215,6 +221,5 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: AppNavigationBar(),
     );
-    
   }
 }
