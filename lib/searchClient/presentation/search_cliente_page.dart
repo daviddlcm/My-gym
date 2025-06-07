@@ -15,7 +15,7 @@ class _SearchClientPageState extends State<SearchClientPage> {
   @override
   void initState() {
     super.initState();
-    context.read<ClientCubit>().fetchClients("f173260f-3412-4b53-bc84-4c55d6bc4b41");
+    context.read<ClientCubit>().fetchClients("1");
   }
 
   @override
@@ -110,7 +110,7 @@ class _SearchClientPageState extends State<SearchClientPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           Navigator.push(
             context,
             MaterialPageRoute(

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend_flutter/addClient/presentation/cubit/add_client_cubit.dart';
 import 'package:frontend_flutter/core/colors/app_colors.dart';
 
 class AddClientPage extends StatefulWidget {
@@ -24,6 +26,12 @@ class _AddClientPageState extends State<AddClientPage> {
     "6 meses",
     "12 meses"
   ];
+
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+
 
 
   @override
@@ -53,6 +61,7 @@ class _AddClientPageState extends State<AddClientPage> {
         child: Column(
           children: [
             TextFormField(
+              controller: _nameController,
                 style: TextStyle(
                   color: AppColors.texts
                 ),
@@ -70,6 +79,7 @@ class _AddClientPageState extends State<AddClientPage> {
               ),
               SizedBox(height: 20),
               TextFormField(
+                controller: _emailController,
                 style: TextStyle(
                   color: AppColors.texts
                 ),
@@ -87,6 +97,7 @@ class _AddClientPageState extends State<AddClientPage> {
               ),
               SizedBox(height: 20),
               TextFormField(
+                controller: _phoneController,
                 style: TextStyle(
                   color: AppColors.texts
                 ),
@@ -104,6 +115,7 @@ class _AddClientPageState extends State<AddClientPage> {
               ),
               SizedBox(height: 20),
               TextFormField(
+                controller: _addressController,
                 style: TextStyle(
                   color: AppColors.texts
                 ),
@@ -157,7 +169,43 @@ class _AddClientPageState extends State<AddClientPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Aquí puedes agregar la lógica para añadir el cliente
+                  // Por ejemplo, llamar a un método que envíe los datos al servidor
+                  String name = _nameController.text;
+                  String email = _emailController.text;
+                  String phone = _phoneController.text;
+                  String address = _addressController.text;
+                  String membership = optionSelected ?? '';
+                  String lastVisit = optionSelectedMonths ?? '';
+
+                  int membershipDuration = lastVisit.isNotEmpty ? int.parse(lastVisit.split(' ')[0]) : 0;
+
+
+                  if(name.isEmpty || email.isEmpty || phone.isEmpty || address.isEmpty || membership.isEmpty || lastVisit.isEmpty) {
+                    // Mostrar un mensaje de error si algún campo está vacío
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Por favor, complete todos los campos'))
+                    );
+                    return;
+                  }
+                  context.read<AddClientCubit>().addClient(
+                    name,
+                    email,
+                    phone,
+                    address,
+                    membership,
+                    membershipDuration
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Registro exitoso')),
+                    );
+                  
+                  Navigator.pop(context,true);
+
+
+                  //print('Cliente añadido: $name, $email, $phone, $address, $membership, $membershipDuration');
+                },
               
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.buttonBackground,

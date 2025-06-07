@@ -165,8 +165,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     );
                     return;
                   }
-                  print('Registering user: $fullName, $email, $password');
                   context.read<RegisterCubit>().registerUser(email, fullName, password);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Registro exitoso')),
+                    );
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
