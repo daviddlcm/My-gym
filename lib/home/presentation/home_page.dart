@@ -201,7 +201,12 @@ class _HomePageState extends State<HomePage> {
                             color: Colors.white,
                           ),
                           onTap: () {
-                            // Aquí puedes navegar a los detalles del cliente
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ClientDetailsPage(clientId: client.id),
+                            )
+                            );
                           },
                         );
                       },

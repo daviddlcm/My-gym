@@ -1,5 +1,3 @@
-
-
 import 'package:frontend_flutter/home/data/models/client_model.dart';
 
 class ClientResponse{

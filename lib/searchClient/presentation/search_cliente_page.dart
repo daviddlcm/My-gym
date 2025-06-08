@@ -64,9 +64,7 @@ class _SearchClientPageState extends State<SearchClientPage> {
                 builder: (context, state) {
                   if (state is ClientLoading) {
                     return const Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                      ),
+                      child: CircularProgressIndicator(color: Colors.white),
                     );
                   } else if (state is ClientError) {
                     return Center(
@@ -83,13 +81,19 @@ class _SearchClientPageState extends State<SearchClientPage> {
                         return ListTile(
                           title: Text(
                             client.name,
-                            style: const TextStyle(color: Colors.white, fontSize: 18),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                            ),
                           ),
                           subtitle: Text(
                             client.email,
                             style: const TextStyle(color: AppColors.texts),
                           ),
-                          leading: const Icon(Icons.person, color: Colors.white),
+                          leading: const Icon(
+                            Icons.person,
+                            color: Colors.white,
+                          ),
                           onTap: () {
                             // Aquí puedes navegar a los detalles del cliente
                           },
@@ -113,9 +117,7 @@ class _SearchClientPageState extends State<SearchClientPage> {
         onPressed: () async {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const AddClientPage(),
-            ),
+            MaterialPageRoute(builder: (context) => AddClientPage()),
           );
         },
         backgroundColor: AppColors.primary,

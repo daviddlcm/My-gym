@@ -10,7 +10,7 @@ class AddClientCubit extends Cubit<AddClientState> {
 
   AddClientCubit(this.addClientUseCases) : super(AddClientInitial());
 
-  Future<void> addClient( String email, String fullName, String phoneNumber, String address,String membership, int lastVisit) async {
+  Future<void> addClient( String fullName, String email, String phoneNumber, String address,String membership, int lastVisit) async {
     try {
       emit(AddClientLoading());
       final addClientRequest = AddClientRequest(

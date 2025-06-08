@@ -201,8 +201,8 @@ class _AddClientPageState extends State<AddClientPage> {
                       const SnackBar(content: Text('Registro exitoso')),
                     );
                   
-                  Navigator.pop(context,true);
 
+                  Navigator.pop(context,true);
 
                   //print('Cliente añadido: $name, $email, $phone, $address, $membership, $membershipDuration');
                 },

@@ -4,6 +4,10 @@ import 'package:frontend_flutter/addClient/data/datasource/add_client_datasource
 import 'package:frontend_flutter/addClient/data/repositories/add_client_repositories_impl.dart';
 import 'package:frontend_flutter/addClient/domain/add_client_use_cases.dart';
 import 'package:frontend_flutter/addClient/presentation/cubit/add_client_cubit.dart';
+import 'package:frontend_flutter/clientDetails/data/datasource/client_details_datasource.dart';
+import 'package:frontend_flutter/clientDetails/data/repositories/client_details_repositories_impl.dart';
+import 'package:frontend_flutter/clientDetails/domain/client_details_use_cases.dart';
+import 'package:frontend_flutter/clientDetails/presentation/cubit/client_details_cubit.dart';
 import 'package:frontend_flutter/home/data/datasource/home_datasource.dart';
 import 'package:frontend_flutter/home/data/repositories/home_repositories.dart';
 import 'package:frontend_flutter/home/domain/home_use_case.dart';
@@ -57,8 +61,18 @@ class MainApp extends StatelessWidget {
     final registerUseCases = RegisterUsecases(registerRepository);
     // register client
     final addClientRemote = AddClientDatasource();
-    final addClientReposity = AddClientRepositoriesImpl(addClientDatasource: addClientRemote);
+    final addClientReposity = AddClientRepositoriesImpl(
+      addClientDatasource: addClientRemote,
+    );
     final addClientUseCases = AddClientUseCases(addClientReposity);
+    //clientDetails
+    final clientDatailsRemote = ClientDetailsDatasource();
+    final clientDetailsRepository = ClientDetailsRepositoriesImpl(
+      clientDetailsDatasource: clientDatailsRemote,
+    );
+    final clientDetailsUseCases = ClientDetailsUseCases(
+      clientDetailsRepository,
+    );
 
     return MultiBlocProvider(
       providers: [
@@ -67,7 +81,8 @@ class MainApp extends StatelessWidget {
         BlocProvider(create: (_) => SearchClientCubit(homeUseCases)),
         BlocProvider(create: (_) => CounterMembersCubit(homeUseCases)),
         BlocProvider(create: (_) => RegisterCubit(registerUseCases)),
-        BlocProvider(create: (_) => AddClientCubit(addClientUseCases))
+        BlocProvider(create: (_) => AddClientCubit(addClientUseCases)),
+        BlocProvider(create: (_) => ClientDetailsCubit(clientDetailsUseCases)),
       ],
       child: MaterialApp(debugShowCheckedModeBanner: false, home: LoginPage()),
     );
