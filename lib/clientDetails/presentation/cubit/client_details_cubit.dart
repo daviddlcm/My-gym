@@ -13,7 +13,7 @@ class ClientDetailsCubit extends Cubit<ClientDetailsState> {
     try {
       emit(ClientDetailsLoading());
       final client = await clientDetailsUseCases.getClientById(id);
-      print("Client fetched: $client");
+      //print("Client fetched: $client");
       emit(ClientDetailsLoaded(client));
     } catch (e) {
       emit(ClientDetailsError(e.toString()));
