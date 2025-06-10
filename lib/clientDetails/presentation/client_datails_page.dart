@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend_flutter/clientDetails/presentation/cubit/client_details_cubit.dart';
+import 'package:frontend_flutter/clientDetails/presentation/cubit/client_update_cubit.dart';
 import 'package:frontend_flutter/clientDetails/presentation/cubit/cliente_delete_cubit.dart';
 import 'package:frontend_flutter/core/colors/app_colors.dart';
 import 'package:frontend_flutter/home/presentation/home_page.dart';
@@ -27,10 +28,21 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
   String membershipStartDate = "2022-01-15";
   String membershipEndDate = "2022-02-15";
 
+
+  late TextEditingController _nameController;
+  late TextEditingController _emailController;
+  late TextEditingController _phoneController;
+  late TextEditingController _addressController;
+  //final TextEditingController _membershipTypeController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     //membershipType = "Premium"; // Valor inicial
+    _nameController = TextEditingController();
+    _emailController = TextEditingController();
+    _phoneController = TextEditingController();
+    _addressController = TextEditingController();
     context.read<ClientDetailsCubit>().fetchClientById(widget.clientId);
   }
 
@@ -59,7 +71,28 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
             );
           }
         },
-      )
+      ),
+      BlocListener<ClientUpdateCubit, ClientUpdateState>(
+        listener: (context, state) {
+          if (state is ClientUpdateLoading) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Actualizando cliente...")),
+            );
+          } else if (state is ClientUpdateSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Cliente actualizado con éxito")),
+            );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          } else if (state is ClientUpdateError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Error al actualizar el cliente: ${state.message}")),
+            );
+          }
+        },
+      ),
     ]
     
       , child: Scaffold(
@@ -102,7 +135,12 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
                 DateTime startDate = DateTime.parse(state.clientDetails.registrationDate);
                 DateTime endDate = DateTime.parse(state.clientDetails.lastVisit);
                 String year = startDate.year.toString(); 
-                membershipType = state.clientDetails.membership;
+                membershipType ??= state.clientDetails.membership;
+                _nameController.text = state.clientDetails.name;
+                _emailController.text = state.clientDetails.email;
+                _phoneController.text = state.clientDetails.phone;
+                _addressController.text = state.clientDetails.address;
+
                 return Column(
                   children: [
                     const SizedBox(height: 20),
@@ -157,7 +195,7 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
-                      initialValue: state.clientDetails.name,
+                      controller: _nameController,
                       style: const TextStyle(color: AppColors.texts),
                       decoration: const InputDecoration(
                         filled: true,
@@ -172,7 +210,7 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
-                      initialValue: state.clientDetails.email,
+                      controller: _emailController,
                       style: const TextStyle(color: AppColors.texts),
                       decoration: const InputDecoration(
                         filled: true,
@@ -187,7 +225,7 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
-                      initialValue: state.clientDetails.phone,
+                      controller: _phoneController,
                       style: const TextStyle(color: AppColors.texts),
                       decoration: const InputDecoration(
                         filled: true,
@@ -202,7 +240,7 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
-                      initialValue: state.clientDetails.address,
+                      controller: _addressController,
                       style: const TextStyle(color: AppColors.texts),
                       decoration: const InputDecoration(
                         filled: true,
@@ -229,6 +267,7 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
                     DropdownButtonFormField<String>(
                       dropdownColor: AppColors.backgroundTextFiel,
                       value: membershipType,
+                      
                       style: const TextStyle(color: AppColors.texts),
                       decoration: const InputDecoration(
                         filled: true,
@@ -295,7 +334,21 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            // Lógica para actualizar cliente
+                            // print("Actualizar cliente con ID: ${widget.clientId}");
+                            // print("Nombre: ${_nameController.text}");
+                            // print("Correo: ${_emailController.text}");
+                            // print("Teléfono: ${_phoneController.text}");
+                            // print("Dirección: ${_addressController.text}");
+                            // print("Tipo de Membresía: $membershipType}");
+
+                            context.read<ClientUpdateCubit>().updateClient(
+                              widget.clientId,
+                              _nameController.text,
+                              _emailController.text,
+                              _phoneController.text,
+                              _addressController.text,
+                              membershipType ?? "Basica", // Valor por defecto si es nulo
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.buttonBackground,

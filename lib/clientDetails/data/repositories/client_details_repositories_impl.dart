@@ -1,6 +1,8 @@
 import 'package:frontend_flutter/clientDetails/data/datasource/client_details_datasource.dart';
 import 'package:frontend_flutter/clientDetails/data/models/client.dart';
 import 'package:frontend_flutter/clientDetails/data/models/client_delete_response.dart';
+import 'package:frontend_flutter/clientDetails/data/models/client_update_request.dart';
+import 'package:frontend_flutter/clientDetails/data/models/client_update_response.dart';
 import 'package:frontend_flutter/clientDetails/domain/client_details_repositories.dart';
 
 class ClientDetailsRepositoriesImpl implements ClientDetailsRepositories{
@@ -21,6 +23,15 @@ class ClientDetailsRepositoriesImpl implements ClientDetailsRepositories{
     final response = await clientDetailsDatasource.deleteClienteById(id);
     if(response == null) {
       throw Exception('Error deleting client');
+    }
+    return response;
+  }
+  @override
+  Future<ClientUpdateResponse> updateClient(String id, ClientUpdateRequest client) async {
+    final response = await clientDetailsDatasource.updateClientById(id,client);
+    
+    if(response == null) {
+      throw Exception('Error updating client');
     }
     return response;
   }

@@ -8,6 +8,7 @@ import 'package:frontend_flutter/clientDetails/data/datasource/client_details_da
 import 'package:frontend_flutter/clientDetails/data/repositories/client_details_repositories_impl.dart';
 import 'package:frontend_flutter/clientDetails/domain/client_details_use_cases.dart';
 import 'package:frontend_flutter/clientDetails/presentation/cubit/client_details_cubit.dart';
+import 'package:frontend_flutter/clientDetails/presentation/cubit/client_update_cubit.dart';
 import 'package:frontend_flutter/clientDetails/presentation/cubit/cliente_delete_cubit.dart';
 import 'package:frontend_flutter/home/data/datasource/home_datasource.dart';
 import 'package:frontend_flutter/home/data/repositories/home_repositories.dart';
@@ -86,6 +87,7 @@ class MainApp extends StatelessWidget {
         BlocProvider(create: (_) => AddClientCubit(addClientUseCases)),
         BlocProvider(create: (_) => ClientDetailsCubit(clientDetailsUseCases)),
         BlocProvider(create: (_) => ClienteDeleteCubit(clientDetailsUseCases)),
+        BlocProvider(create: (_) => ClientUpdateCubit(clientDetailsUseCases)),
       ],
       child: MaterialApp(debugShowCheckedModeBanner: false, home: LoginPage()),
     );
