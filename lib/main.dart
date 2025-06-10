@@ -8,6 +8,7 @@ import 'package:frontend_flutter/clientDetails/data/datasource/client_details_da
 import 'package:frontend_flutter/clientDetails/data/repositories/client_details_repositories_impl.dart';
 import 'package:frontend_flutter/clientDetails/domain/client_details_use_cases.dart';
 import 'package:frontend_flutter/clientDetails/presentation/cubit/client_details_cubit.dart';
+import 'package:frontend_flutter/clientDetails/presentation/cubit/cliente_delete_cubit.dart';
 import 'package:frontend_flutter/home/data/datasource/home_datasource.dart';
 import 'package:frontend_flutter/home/data/repositories/home_repositories.dart';
 import 'package:frontend_flutter/home/domain/home_use_case.dart';
@@ -74,6 +75,7 @@ class MainApp extends StatelessWidget {
       clientDetailsRepository,
     );
 
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => ClientCubit(getClientsById)),
@@ -83,6 +85,7 @@ class MainApp extends StatelessWidget {
         BlocProvider(create: (_) => RegisterCubit(registerUseCases)),
         BlocProvider(create: (_) => AddClientCubit(addClientUseCases)),
         BlocProvider(create: (_) => ClientDetailsCubit(clientDetailsUseCases)),
+        BlocProvider(create: (_) => ClienteDeleteCubit(clientDetailsUseCases)),
       ],
       child: MaterialApp(debugShowCheckedModeBanner: false, home: LoginPage()),
     );

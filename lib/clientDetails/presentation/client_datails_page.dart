@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend_flutter/clientDetails/presentation/cubit/client_details_cubit.dart';
+import 'package:frontend_flutter/clientDetails/presentation/cubit/cliente_delete_cubit.dart';
 import 'package:frontend_flutter/core/colors/app_colors.dart';
+import 'package:frontend_flutter/home/presentation/home_page.dart';
 
 class ClientDetailsPage extends StatefulWidget {
   final String clientId;
   const ClientDetailsPage({super.key, required this.clientId});
 
-  // Esta página recibe el ID del cliente como parámetro
+  
   @override
   State<ClientDetailsPage> createState() => _ClientDetailsPageState();
 }
@@ -36,7 +38,31 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
   Widget build(BuildContext context) {
     //print("este es el id:"+ widget.clientId);
 
-    return Scaffold(
+    return MultiBlocListener(listeners: [
+      BlocListener<ClienteDeleteCubit,ClienteDeleteState>(
+        listener: (context,state){
+          if(state is ClienteDeleteLoading){
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Eliminando cliente...")),
+            );
+          } else if(state is ClienteDeleteSuccess){
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Cliente eliminado con éxito")),
+            );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          } else if(state is ClienteDeleteError){
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Error al eliminar el cliente: ${state.message}")),
+            );
+          }
+        },
+      )
+    ]
+    
+      , child: Scaffold(
       backgroundColor: AppColors.primary,
       appBar: AppBar(
         backgroundColor: AppColors.primary,
@@ -287,7 +313,7 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
                         const SizedBox(height: 10),
                         ElevatedButton(
                           onPressed: () {
-                            // Lógica para eliminar cliente
+                            context.read<ClienteDeleteCubit>().deleteClientById(widget.clientId);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
@@ -317,6 +343,8 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
           ),
         ),
       ),
+    )
+    
     );
   }
 }
